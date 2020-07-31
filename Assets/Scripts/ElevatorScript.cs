@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using TMPro;
 
 public class ElevatorScript : MonoBehaviour
 {
@@ -15,9 +16,11 @@ public class ElevatorScript : MonoBehaviour
     public GameObject cameraObj;
     private CameraScript cameraScript;
     private Queue<GameObject> personQueue;
-    public float eleSpeed = 5f;
+    public float eleSpeed = 0.5f;
     public float yLimit = 3f;
     public int numFloors = 9;
+    private TextMeshProUGUI floorNum;
+    private float sizeFloor;
 
     // Start is called before the first frame update
 
@@ -26,16 +29,22 @@ public class ElevatorScript : MonoBehaviour
         isBottom = true;
         isMoving = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
-        
+        floorNum = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
+
     }
     void Start()
     {
         personQueue = cameraScript.personQueue;
+        floorNum.text = "0";
+        sizeFloor = 2 * yLimit / numFloors;
     }
 
     // Update is called once per frame
     void Update()
     {
+        updateFloorNum();
+
+
         if (isMoving && isBottom)
         {
             moveUp();
@@ -76,5 +85,11 @@ public class ElevatorScript : MonoBehaviour
             isMoving = false;
             isBottom = true;
         }
+    }
+    
+    void updateFloorNum()
+    {
+        floorNum.text = Convert.ToInt32(((yLimit + transform.position.y) / sizeFloor)).ToString();
+        
     }
 }

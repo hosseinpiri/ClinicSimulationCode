@@ -9,11 +9,11 @@ public class PersonScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        gameObject.transform.parent = this.parent.transform;
+        gameObject.transform.SetParent(this.parent.transform);
     }
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
