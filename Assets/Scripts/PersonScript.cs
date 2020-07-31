@@ -6,6 +6,7 @@ public class PersonScript : MonoBehaviour
 {
     public GameObject parent;
     public int destFloor;
+    public int srcFloor;
     // Start is called before the first frame update
     void Awake()
     {

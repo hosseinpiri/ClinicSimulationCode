@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -36,10 +37,16 @@ public class CameraScript : MonoBehaviour
             currCicle.transform.position = personPos.transform.position - Vector3.right*xSpace*personQueue.Count;
             currCicle.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
             PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
-            currCircleScript.destFloor = 3;
+            currCircleScript.destFloor = (int) (Random.Range(1.0f, 9.0f));
             personQueue.Enqueue(currCicle);
         }
-        if (!elevatorScript.isMoving && elevatorScript.isBottom && personQueue.Count > 0)
+        if (!elevatorScript.isMoving && elevatorScript.currFloor != 0)
+        {
+            lastPerson.transform.SetParent(transform);
+            lastPerson.transform.position = new Vector3(upSoFar * xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
+            elevatorScript.deliverToFloor(0);
+        }
+        if (!elevatorScript.isMoving && elevatorScript.currFloor == 0 && personQueue.Count > 0)
         {
             lastPerson = personQueue.Peek();
             lastPersonScript = lastPerson.GetComponent<PersonScript>();
@@ -49,15 +56,13 @@ public class CameraScript : MonoBehaviour
             upSoFar++;
             foreach (GameObject curr in personQueue) {
                 curr.transform.position += Vector3.right * xSpace;
-            } 
-            elevatorScript.isMoving = true;
+            }
+            elevatorScript.deliverToFloor(lastPersonScript.destFloor);
         }
 
         if (!elevatorScript.isBottom && !elevatorScript.isMoving)
         {
-            lastPerson.transform.SetParent(transform);
-            lastPerson.transform.position = new Vector3(upSoFar * xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
-            elevatorScript.isMoving = true;
+            
         }
 
     }
