@@ -14,7 +14,8 @@ public class CameraScript : MonoBehaviour
     private ElevatorScript elevatorScript;
     private GameObject lastPerson;
     private PersonScript lastPersonScript;
-    private int upSoFar = 0;
+    private int[] upSoFar;
+    private List<GameObject>[] travelled;
 
     private void Awake()
     {
@@ -24,7 +25,12 @@ public class CameraScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        upSoFar = new int[elevatorScript.numFloors];
+        travelled = new List<GameObject>[elevatorScript.numFloors];
+        for (int i = 0; i < elevatorScript.numFloors; i++)
+        {
+            travelled[i] = new List<GameObject>();
+        }
     }
 
     // Update is called once per frame
@@ -43,26 +49,26 @@ public class CameraScript : MonoBehaviour
         if (!elevatorScript.isMoving && elevatorScript.currFloor != 0)
         {
             lastPerson.transform.SetParent(transform);
-            lastPerson.transform.position = new Vector3(upSoFar * xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
+            foreach (GameObject curr in travelled[lastPersonScript.destFloor])
+            {
+                curr.transform.position += Vector3.right * xSpace;
+            }
+            lastPerson.transform.position = new Vector3(xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
             elevatorScript.deliverToFloor(0);
         }
         if (!elevatorScript.isMoving && elevatorScript.currFloor == 0 && personQueue.Count > 0)
         {
             lastPerson = personQueue.Peek();
             lastPersonScript = lastPerson.GetComponent<PersonScript>();
-            lastPerson.transform.position += xSpace * Vector3.right/2;
+            // Put the person in the elevator
+            lastPerson.transform.position += xSpace * Vector3.right;
             lastPerson.transform.SetParent(elevatorObj.transform);
             personQueue.Dequeue();
-            upSoFar++;
+            travelled[lastPersonScript.destFloor].Add(lastPerson);
             foreach (GameObject curr in personQueue) {
                 curr.transform.position += Vector3.right * xSpace;
             }
             elevatorScript.deliverToFloor(lastPersonScript.destFloor);
-        }
-
-        if (!elevatorScript.isBottom && !elevatorScript.isMoving)
-        {
-            
         }
 
     }
