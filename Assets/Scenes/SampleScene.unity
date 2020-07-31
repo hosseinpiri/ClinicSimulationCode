@@ -155,7 +155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 9.83, y: -1.9}
+  m_AnchoredPosition: {x: 9.85, y: -1.94}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &79079447
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -246,13 +246,13 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 176.58667, w: 38.21423}
   m_textInfo:
     textComponent: {fileID: 79079447}
-    characterCount: 0
+    characterCount: 1
     spriteCount: 0
     spaceCount: 0
-    wordCount: 0
+    wordCount: 1
     linkCount: 0
-    lineCount: 0
-    pageCount: 0
+    lineCount: 1
+    pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
@@ -669,12 +669,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83e7958843b4e3a49882a00e0afcc525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isBottom: 0
+  isBottom: 1
   isMoving: 0
   cameraObj: {fileID: 519420028}
-  eleSpeed: 10
+  eleSpeed: 1
   yLimit: 3
   numFloors: 9
+  sizeFloor: 0
 --- !u!1001 &2927775420145536012
 PrefabInstance:
   m_ObjectHideFlags: 0

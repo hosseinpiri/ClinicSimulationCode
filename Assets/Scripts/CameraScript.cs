@@ -12,6 +12,7 @@ public class CameraScript : MonoBehaviour
     public GameObject elevatorObj;
     private ElevatorScript elevatorScript;
     private GameObject lastPerson;
+    private PersonScript lastPersonScript;
     private int upSoFar = 0;
 
     private void Awake()
@@ -34,11 +35,16 @@ public class CameraScript : MonoBehaviour
             currCicle.SetActive(true);
             currCicle.transform.position = personPos.transform.position - Vector3.right*xSpace*personQueue.Count;
             currCicle.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
+            PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
+            currCircleScript.destFloor = 3;
             personQueue.Enqueue(currCicle);
         }
         if (!elevatorScript.isMoving && elevatorScript.isBottom && personQueue.Count > 0)
         {
             lastPerson = personQueue.Peek();
+            lastPersonScript = lastPerson.GetComponent<PersonScript>();
+            lastPerson.transform.position += xSpace * Vector3.right/2;
+            lastPerson.transform.SetParent(elevatorObj.transform);
             personQueue.Dequeue();
             upSoFar++;
             foreach (GameObject curr in personQueue) {
@@ -49,8 +55,8 @@ public class CameraScript : MonoBehaviour
 
         if (!elevatorScript.isBottom && !elevatorScript.isMoving)
         {
-            lastPerson.transform.position = new Vector3(-lastPerson.transform.position.x*upSoFar* xSpace, -lastPerson.transform.position.y,
-                lastPerson.transform.position.z);
+            lastPerson.transform.SetParent(transform);
+            lastPerson.transform.position = new Vector3(upSoFar * xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
             elevatorScript.isMoving = true;
         }
 

@@ -16,11 +16,12 @@ public class ElevatorScript : MonoBehaviour
     public GameObject cameraObj;
     private CameraScript cameraScript;
     private Queue<GameObject> personQueue;
-    public float eleSpeed = 0.5f;
+    public float eleSpeed = 1f;
     public float yLimit = 3f;
     public int numFloors = 9;
-    private TextMeshProUGUI floorNum;
-    private float sizeFloor;
+    private int currFloor = 0;
+    private TextMeshProUGUI floorNumText;
+    public float sizeFloor;
 
     // Start is called before the first frame update
 
@@ -29,13 +30,13 @@ public class ElevatorScript : MonoBehaviour
         isBottom = true;
         isMoving = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
-        floorNum = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
+        floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
 
     }
     void Start()
     {
         personQueue = cameraScript.personQueue;
-        floorNum.text = "0";
+        floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
     }
 
@@ -89,7 +90,9 @@ public class ElevatorScript : MonoBehaviour
     
     void updateFloorNum()
     {
-        floorNum.text = Convert.ToInt32(((yLimit + transform.position.y) / sizeFloor)).ToString();
-        
+        currFloor = Convert.ToInt32((yLimit + transform.position.y) / sizeFloor);
+        floorNumText.text = currFloor.ToString();
     }
+
+    
 }
