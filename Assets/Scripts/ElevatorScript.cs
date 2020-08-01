@@ -26,6 +26,7 @@ public class ElevatorScript : MonoBehaviour
     private TextMeshProUGUI floorNumText;
     public float sizeFloor;
     private int destFloor = 0;
+    private GameObjectTransition eleTrans;
 
     // Start is called before the first frame update
 
@@ -43,6 +44,8 @@ public class ElevatorScript : MonoBehaviour
         personQueue = cameraScript.personQueue;
         floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
+        eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
+
     }
 
     // Update is called once per frame
@@ -50,16 +53,10 @@ public class ElevatorScript : MonoBehaviour
     {
         updateFloorNum();
 
-
-        if (isMoving && isMovingUp)
+        if (isMoving)
         {
-            moveUp();
-        }
-
-
-        if (isMoving && !isMovingUp)
-        {
-            moveDown();
+            eleTrans.dest = new Vector3(transform.position.x, -yLimit + sizeFloor * destFloor, transform.position.z);
+            if (!eleTrans.transitionY()) isMoving = false;
         }
     }
         
@@ -80,34 +77,6 @@ public class ElevatorScript : MonoBehaviour
         if (currFloor > floorNum) {
             isMoving = true;
             isMovingUp = false;
-        }
-    }
-
-    void moveUp()
-    {
-        if (transform.position.y < -yLimit + sizeFloor*destFloor)
-        {
-            Vector3 newPos = transform.position + Vector3.up * Time.deltaTime * eleSpeed;
-            if (newPos.y < -yLimit + sizeFloor * destFloor) transform.position = newPos;
-            else transform.position = new Vector3(0, -yLimit + sizeFloor * destFloor, 0);
-        }
-        if (Mathf.Approximately(transform.position.y, -yLimit + sizeFloor * destFloor))
-        {
-            isMoving = false;
-        }
-    }
-
-    void moveDown()
-    {
-        if (transform.position.y > -yLimit + sizeFloor * destFloor)
-        {
-            Vector3 newPos = transform.position - Vector3.up * Time.deltaTime * eleSpeed;
-            if (newPos.y > -yLimit + sizeFloor * destFloor) transform.position = newPos;
-            else transform.position = new Vector3(0, -yLimit + sizeFloor * destFloor, 0);
-        }
-        if (Mathf.Approximately(transform.position.y, -yLimit + sizeFloor * destFloor))
-        {
-            isMoving = false;
         }
     }
 }

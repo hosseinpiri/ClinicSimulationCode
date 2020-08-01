@@ -16,6 +16,7 @@ public class CameraScript : MonoBehaviour
     private PersonScript lastPersonScript;
     private int[] upSoFar;
     private List<GameObject>[] travelled;
+    private List<GameObjectTransition> gotArr;
 
     private void Awake()
     {
@@ -31,11 +32,13 @@ public class CameraScript : MonoBehaviour
         {
             travelled[i] = new List<GameObject>();
         }
+        gotArr = new List<GameObjectTransition>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        transitionHelper();
         if (Input.GetKeyUp(KeyCode.Space))
         {
             GameObject currCicle = Instantiate(person);
@@ -51,7 +54,7 @@ public class CameraScript : MonoBehaviour
             lastPerson.transform.SetParent(transform);
             foreach (GameObject curr in travelled[lastPersonScript.destFloor])
             {
-                curr.transform.position += Vector3.right * xSpace;
+                gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }
             lastPerson.transform.position = new Vector3(xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
             elevatorScript.deliverToFloor(0);
@@ -66,10 +69,14 @@ public class CameraScript : MonoBehaviour
             personQueue.Dequeue();
             travelled[lastPersonScript.destFloor].Add(lastPerson);
             foreach (GameObject curr in personQueue) {
-                curr.transform.position += Vector3.right * xSpace;
+                gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }
             elevatorScript.deliverToFloor(lastPersonScript.destFloor);
         }
 
+    }
+    private void transitionHelper()
+    {
+         gotArr.RemoveAll(got => !got.transitionX());
     }
 }
