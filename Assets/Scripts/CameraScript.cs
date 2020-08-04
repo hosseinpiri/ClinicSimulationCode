@@ -14,8 +14,7 @@ public class CameraScript : MonoBehaviour
     private ElevatorScript elevatorScript;
     private GameObject lastPerson;
     private PersonScript lastPersonScript;
-    private int[] upSoFar;
-    private List<GameObject>[] travelled;
+    private Queue<GameObject>[] travelledUp;
     private List<GameObjectTransition> gotArr;
 
     private void Awake()
@@ -26,11 +25,10 @@ public class CameraScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        upSoFar = new int[elevatorScript.numFloors];
-        travelled = new List<GameObject>[elevatorScript.numFloors];
+        travelledUp = new Queue<GameObject>[elevatorScript.numFloors];
         for (int i = 0; i < elevatorScript.numFloors; i++)
         {
-            travelled[i] = new List<GameObject>();
+            travelledUp[i] = new Queue<GameObject>();
         }
         gotArr = new List<GameObjectTransition>();
     }
@@ -46,13 +44,14 @@ public class CameraScript : MonoBehaviour
             currCicle.transform.position = personPos.transform.position - Vector3.right*xSpace*personQueue.Count;
             currCicle.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
             PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
+            currCircleScript.srcFloor = 0;
             currCircleScript.destFloor = (int) (Random.Range(1.0f, 9.0f));
             personQueue.Enqueue(currCicle);
         }
         if (!elevatorScript.isMoving && elevatorScript.currFloor != 0)
         {
             lastPerson.transform.SetParent(transform);
-            foreach (GameObject curr in travelled[lastPersonScript.destFloor])
+            foreach (GameObject curr in travelledUp[lastPersonScript.destFloor])
             {
                 gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }
@@ -67,7 +66,7 @@ public class CameraScript : MonoBehaviour
             lastPerson.transform.position += xSpace * Vector3.right;
             lastPerson.transform.SetParent(elevatorObj.transform);
             personQueue.Dequeue();
-            travelled[lastPersonScript.destFloor].Add(lastPerson);
+            travelledUp[lastPersonScript.destFloor].Enqueue(lastPerson);
             foreach (GameObject curr in personQueue) {
                 gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }

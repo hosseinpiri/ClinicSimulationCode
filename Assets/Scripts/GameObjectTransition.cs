@@ -32,7 +32,7 @@ public class GameObjectTransition
         return transition(1, Vector3.up);
     }
 
-    private Boolean transition(int i, Vector3 shift)
+    private Boolean transition(int i, Vector3 shiftDir)
     {
         if (Mathf.Approximately(dest[i], gameObj.transform.position[i]))
         {
@@ -40,14 +40,14 @@ public class GameObjectTransition
         }
         if (dest[i] > gameObj.transform.position[i])
         {
-            Vector3 newPos = gameObj.transform.position + shift * Time.deltaTime * transitionSpeed;
+            Vector3 newPos = gameObj.transform.position + shiftDir * Time.deltaTime * transitionSpeed;
             if (dest[i] > newPos[i]) gameObj.transform.position = newPos;
             else gameObj.transform.position = dest;
             return true;
         }
         if (dest[i] < gameObj.transform.position[i])
         {
-            Vector3 newPos = gameObj.transform.position - shift * Time.deltaTime * transitionSpeed;
+            Vector3 newPos = gameObj.transform.position - shiftDir * Time.deltaTime * transitionSpeed;
             if (dest[i] < newPos[i]) gameObj.transform.position = newPos;
             else gameObj.transform.position = dest;
             return true;

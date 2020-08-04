@@ -10,6 +10,9 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+#Ignore Resources for now 
+/[Aa]ssets/Resources
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 

@@ -13,12 +13,11 @@ using System.Security.Cryptography;
 
 public class ElevatorScript : MonoBehaviour
 {
-    public Boolean isBottom;
     public Boolean isMoving;
     public Boolean isMovingUp;
     public GameObject cameraObj;
     private CameraScript cameraScript;
-    private Queue<GameObject> personQueue;
+    //private Queue<GameObject> personQueue;
     public float eleSpeed = 1f;
     public float yLimit = 3f;
     public int numFloors = 9;
@@ -27,21 +26,21 @@ public class ElevatorScript : MonoBehaviour
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
+    private List<Event> eventsList;
 
     // Start is called before the first frame update
 
     private void Awake()
     {
-        isBottom = true;
         isMoving = false;
         isMovingUp = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
         floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
-
+        eventsList = CSVReader.Read("DataCSV");
     }
     void Start()
     {
-        personQueue = cameraScript.personQueue;
+        //personQueue = cameraScript.personQueue;
         floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
         eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
