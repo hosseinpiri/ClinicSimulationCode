@@ -542,6 +542,9 @@ MonoBehaviour:
   personPos: {fileID: 684796338}
   person: {fileID: 2927775420145536013}
   elevatorObj: {fileID: 1564771623}
+  yLimit: 3
+  numFloors: 9
+  sizeFloor: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -739,7 +742,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 684796337}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: -3.3, z: 10}
+  m_LocalPosition: {x: 0, y: -3.34, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 519420032}
