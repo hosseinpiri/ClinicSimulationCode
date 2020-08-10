@@ -23,6 +23,7 @@ public class ElevatorScript : MonoBehaviour
     public int numFloors = 9;
     public int currFloor = 0;
     private TextMeshProUGUI floorNumText;
+    public TextMeshProUGUI loadText;
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
@@ -35,6 +36,7 @@ public class ElevatorScript : MonoBehaviour
         isMovingUp = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
         floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
+        loadText = gameObject.GetComponentInChildren<Canvas>().GetComponentsInChildren<TextMeshProUGUI>()[1];
         floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
         eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);

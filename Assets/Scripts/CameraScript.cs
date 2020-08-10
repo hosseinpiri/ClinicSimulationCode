@@ -11,7 +11,7 @@ public class CameraScript : MonoBehaviour
     public Transform personPos;
     public GameObject person;
     public Queue<GameObject> personQueue;
-    private float xSpace = 0.5f;
+    private float xSpace = 0.8f;
     public GameObject elevatorObj;
     public GameObjectTransition eleTransition;
     private ElevatorScript elevatorScript;
@@ -46,9 +46,9 @@ public class CameraScript : MonoBehaviour
         eleEventList = eventList.Where(e => e.eventName == EventName.elevator_load).ToList();
         sizeFloor = 2 * yLimit / numFloors;
         eleQueueUp = initQueue(-Vector3.right * xSpace);
-        eleQueueDown = initQueue(-Vector3.right * xSpace*8);
-        doctorQueue = initQueue(Vector3.right * xSpace*8);
-        doctorVisited = initQueue(Vector3.right * xSpace * 16);
+        eleQueueDown = initQueue(-Vector3.right * xSpace*4);
+        doctorQueue = initQueue(Vector3.right * xSpace*4);
+        doctorVisited = initQueue(Vector3.right * xSpace * 8);
     }
     // Start is called before the first frame update
     void Start()
@@ -66,42 +66,6 @@ public class CameraScript : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.L)) updateQueue(doctorQueue[0], 2);
         if (Input.GetKeyUp(KeyCode.R)) {
             updateQueue(doctorQueue[6], doctorQueue[6].q.Count + 4);
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            GameObject currCicle = Instantiate(person);
-            currCicle.SetActive(true);
-            currCicle.transform.position = personPos.transform.position - Vector3.right*xSpace*personQueue.Count;
-            currCicle.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
-            PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
-            currCircleScript.srcFloor = 0;
-            currCircleScript.destFloor = (int) (Random.Range(1.0f, 9.0f));
-            personQueue.Enqueue(currCicle);
-        }
-        if (!elevatorScript.isMoving && elevatorScript.currFloor != 0)
-        {
-            lastPerson.transform.SetParent(transform);
-            foreach (GameObject curr in travelledUp[lastPersonScript.destFloor])
-            {
-                personTransitionList.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
-            }
-            lastPerson.transform.position = new Vector3(xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
-            elevatorScript.deliverToFloor(0);
-        }
-        if (!elevatorScript.isMoving && elevatorScript.currFloor == 0 && personQueue.Count > 0)
-        {
-            lastPerson = personQueue.Peek();
-            lastPersonScript = lastPerson.GetComponent<PersonScript>();
-            // Put the person in the elevator
-            lastPerson.transform.position += xSpace * Vector3.right;
-            lastPerson.transform.SetParent(elevatorObj.transform);
-            personQueue.Dequeue();
-            travelledUp[lastPersonScript.destFloor].Enqueue(lastPerson);
-            foreach (GameObject curr in personQueue) {
-                personTransitionList.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
-            }
-            elevatorScript.deliverToFloor(lastPersonScript.destFloor);
         }
 
     }
@@ -125,9 +89,15 @@ public class CameraScript : MonoBehaviour
                     sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
                 eleTransition.transitionTime = curEvent.time - prevEvent.time;
                 eleTransition.transitionSpeed = Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / eleTransition.transitionTime;
+                elevatorScript.loadText.text = prevEvent.newVal.ToString();
+                if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
+                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal);
+                if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
+                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal);
                 eleEventList.RemoveAt(0);
             }
         }
+        if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) elevatorScript.loadText.text = eleEventList[0].newVal.ToString();
     }
     private QueueObj[] initQueue(Vector3 xoffSet)
     {
@@ -148,7 +118,6 @@ public class CameraScript : MonoBehaviour
                 GameObject currCicle = Instantiate(person);
                 currCicle.SetActive(true);
                 currCicle.transform.position = queueObj.offset - Vector3.right * xSpace * queueObj.q.Count;
-                currCicle.GetComponent<Renderer>().material.SetColor("_Color", Random.ColorHSV());
                 PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
                 queueObj.q.Enqueue(currCicle);
             }
@@ -159,7 +128,7 @@ public class CameraScript : MonoBehaviour
             {
                 lastPerson = queueObj.q.Peek();
                 lastPersonScript = lastPerson.GetComponent<PersonScript>();
-                Destroy(lastPerson);
+                lastPersonScript.animateDestroy();
                 //lastPerson.transform.position += xSpace * Vector3.right;
                 //lastPerson.transform.SetParent(elevatorObj.transform);
                 queueObj.q.Dequeue();
