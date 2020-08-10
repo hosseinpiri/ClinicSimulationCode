@@ -7,7 +7,9 @@ public class GameObjectTransition
 {
     public GameObject gameObj;
     public Vector3 dest;
-    private float transitionSpeed = 10F;
+    public float transitionSpeed = 10F;
+    private float elapsedTime = 0;
+    public float transitionTime { get; set; } = 0;
 
     public GameObjectTransition(GameObject gameObj, Vector3 dest)
     {
@@ -36,6 +38,8 @@ public class GameObjectTransition
     {
         if (Mathf.Approximately(dest[i], gameObj.transform.position[i]))
         {
+            elapsedTime = 0;
+            transitionTime = 0;
             return false;
         }
         if (dest[i] > gameObj.transform.position[i])
@@ -54,4 +58,24 @@ public class GameObjectTransition
         }
         return false;
     }
+
+    //public Boolean transitionYTime()
+    //{
+    //    if (Mathf.Approximately(elapsedTime, transitionTime))
+    //    {
+    //        elapsedTime = 0;
+    //        transitionTime = 0;
+    //        return false;
+    //    }
+    //    if (elapsedTime < transitionTime)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        if (transitionTime > elapsedTime) gameObj.transform.position = Vector3.Lerp(gameObj.transform.position, dest, 
+    //            (elapsedTime / transitionTime));
+    //        else gameObj.transform.position = dest;
+    //        return true;
+    //    }
+    //    return false;
+        
+    //}
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using System.Linq;
+using TMPro;
 
 public class CameraScript : MonoBehaviour
 {
@@ -11,32 +13,47 @@ public class CameraScript : MonoBehaviour
     public Queue<GameObject> personQueue;
     private float xSpace = 1f;
     public GameObject elevatorObj;
+    public GameObjectTransition eleTransition;
     private ElevatorScript elevatorScript;
     private GameObject lastPerson;
     private PersonScript lastPersonScript;
     private Queue<GameObject>[] travelledUp;
-    private List<GameObjectTransition> gotArr;
+    private List<GameObjectTransition> personTransitionList;
+    private List<Event> eventList;
+    private List<Event> eleEventList;
+    private Queue<GameObject>[] eleQueueUp;
+    private Queue<GameObject>[] eleQueueDown;
+    private Queue<GameObject>[] clinicQueue;
+    private Queue<GameObject>[] doctorQueue;
+    private float elapsedTime = 0;
+
 
     private void Awake()
     {
         personQueue = new Queue<GameObject>();
         elevatorScript = elevatorObj.GetComponent<ElevatorScript>();
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
+        eleTransition = new GameObjectTransition(elevatorObj, elevatorObj.transform.position);
         travelledUp = new Queue<GameObject>[elevatorScript.numFloors];
         for (int i = 0; i < elevatorScript.numFloors; i++)
         {
             travelledUp[i] = new Queue<GameObject>();
         }
-        gotArr = new List<GameObjectTransition>();
+        personTransitionList = new List<GameObjectTransition>();
+        eventList = CSVReader.Read("DataCSV");
+        eleEventList = eventList.Where(e => e.eventName == EventName.elevator_load).ToList();
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        elapsedTime += Time.deltaTime;
         transitionHelper();
+
         if (Input.GetKeyUp(KeyCode.Space))
         {
             GameObject currCicle = Instantiate(person);
@@ -53,7 +70,7 @@ public class CameraScript : MonoBehaviour
             lastPerson.transform.SetParent(transform);
             foreach (GameObject curr in travelledUp[lastPersonScript.destFloor])
             {
-                gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
+                personTransitionList.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }
             lastPerson.transform.position = new Vector3(xSpace, -elevatorScript.yLimit + elevatorScript.sizeFloor * lastPersonScript.destFloor, lastPerson.transform.position.z);
             elevatorScript.deliverToFloor(0);
@@ -68,7 +85,7 @@ public class CameraScript : MonoBehaviour
             personQueue.Dequeue();
             travelledUp[lastPersonScript.destFloor].Enqueue(lastPerson);
             foreach (GameObject curr in personQueue) {
-                gotArr.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
+                personTransitionList.Add(new GameObjectTransition(curr, curr.transform.position + Vector3.right * xSpace));
             }
             elevatorScript.deliverToFloor(lastPersonScript.destFloor);
         }
@@ -76,6 +93,25 @@ public class CameraScript : MonoBehaviour
     }
     private void transitionHelper()
     {
-         gotArr.RemoveAll(got => !got.transitionX());
+        personTransitionList.RemoveAll(got => !got.transitionX());
+        pushEleTransition();
+        eleTransition.transitionY();
+    }
+
+    private void pushEleTransition()
+    {
+        if (eleEventList.Count > 1)
+        {
+            Event prevEvent = eleEventList[0];
+            Event curEvent = eleEventList[1];
+            if (elapsedTime > prevEvent.time)
+            {
+                eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -elevatorScript.yLimit +
+                    elevatorScript.sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
+                eleTransition.transitionTime = curEvent.time - prevEvent.time;
+                eleTransition.transitionSpeed = Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / eleTransition.transitionTime;
+                eleEventList.RemoveAt(0);
+            }
+        }
     }
 }

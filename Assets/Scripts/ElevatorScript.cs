@@ -26,7 +26,6 @@ public class ElevatorScript : MonoBehaviour
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
-    private List<Event> eventsList;
 
     // Start is called before the first frame update
 
@@ -36,15 +35,13 @@ public class ElevatorScript : MonoBehaviour
         isMovingUp = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
         floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
-        eventsList = CSVReader.Read("DataCSV");
+        floorNumText.text = "0";
+        sizeFloor = 2 * yLimit / numFloors;
+        eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
     }
     void Start()
     {
         //personQueue = cameraScript.personQueue;
-        floorNumText.text = "0";
-        sizeFloor = 2 * yLimit / numFloors;
-        eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
-
     }
 
     // Update is called once per frame
@@ -52,11 +49,11 @@ public class ElevatorScript : MonoBehaviour
     {
         updateFloorNum();
 
-        if (isMoving)
-        {
-            eleTrans.dest = new Vector3(transform.position.x, -yLimit + sizeFloor * destFloor, transform.position.z);
-            if (!eleTrans.transitionY()) isMoving = false;
-        }
+        //if (isMoving)
+        //{
+        //    eleTrans.dest = new Vector3(transform.position.x, -yLimit + sizeFloor * destFloor, transform.position.z);
+        //    if (!eleTrans.transitionY()) isMoving = false;
+        //}
     }
         
     void updateFloorNum()
