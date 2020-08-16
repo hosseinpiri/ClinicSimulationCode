@@ -44,7 +44,8 @@ public class PersonScript : MonoBehaviour
             currAlpha += Time.deltaTime * fadeSpeed;
             Color newColor = new Color(color.r, color.g, color.b, Mathf.Max(0, finalAlpha - currAlpha));
             gameObject.GetComponent<Renderer>().material.SetColor("_Color", newColor);
-            if (Mathf.Approximately(currAlpha, 0) || currAlpha <= 0) Destroy(gameObject);
+            if (Mathf.Approximately(finalAlpha - currAlpha, 0) || finalAlpha - currAlpha <= 0) 
+                Destroy(gameObject);
         }
     }
 
