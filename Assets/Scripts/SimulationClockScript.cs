@@ -9,19 +9,20 @@ public class SimulationClockScript : MonoBehaviour
     private TextMeshProUGUI simulationClock;
     public GameObject canvasSimulationClock;
     private DateTime elapsedTime;
-    private CameraScript cameraScript;
+    public CameraScript cameraScript;
     // Start is called before the first frame update
     void Awake()
     {
+        cameraScript = gameObject.GetComponent<CameraScript>();
         simulationClock = canvasSimulationClock.GetComponentInChildren<TextMeshProUGUI>();
         simulationClock.text = "00:00:00";
-        cameraScript = gameObject.GetComponent<CameraScript>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        elapsedTime = elapsedTime.AddSeconds(Time.deltaTime);
+        TimeSpan time = TimeSpan.FromSeconds(cameraScript.elapsedTime);
+        elapsedTime = elapsedTime.Date + time;
         simulationClock.text = elapsedTime.ToString("HH:mm:ss");
     }
 }

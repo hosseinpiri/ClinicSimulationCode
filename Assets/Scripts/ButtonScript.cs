@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -10,10 +11,11 @@ public class ButtonScript : MonoBehaviour
     public Button playPauseButton;
     public Sprite playImage;
     public Sprite pauseImage;
+    public CameraScript cameraScript;
     // Start is called before the first frame update
     void Awake()
     {
-
+        cameraScript = transform.parent.GetComponent<CameraScript>();
     }
 
     // Update is called once per frame
@@ -47,5 +49,10 @@ public class ButtonScript : MonoBehaviour
             playPauseButton.image.sprite = playImage;
         }
         
+    }
+
+    public void onRestart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

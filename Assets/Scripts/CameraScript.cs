@@ -24,7 +24,7 @@ public class CameraScript : MonoBehaviour
     private QueueObj[] eleQueueUp;
     private QueueObj[] eleQueueDown;
     private QueueObj[] doctorQueue;
-    private float elapsedTime = 0;
+    public float elapsedTime = 0;
     public float yLimit = 3f;
     public int numFloors = 9;
     public float sizeFloor;
