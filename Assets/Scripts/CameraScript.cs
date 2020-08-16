@@ -11,7 +11,7 @@ public class CameraScript : MonoBehaviour
     public Transform personPos;
     public GameObject person;
     public Queue<GameObject> personQueue;
-    private float xSpace = 0.8f;
+    private float xSpace = 0.5f;
     public GameObject elevatorObj;
     public GameObjectTransition eleTransition;
     private ElevatorScript elevatorScript;
@@ -42,12 +42,12 @@ public class CameraScript : MonoBehaviour
             travelledUp[i] = new Queue<GameObject>();
         }
         personTransitionList = new List<GameObjectTransition>();
-        eventList = CSVReader.Read("DataCSV");
+        eventList = CSVReader.Read("DataCSVModified");
         eleEventList = eventList.Where(e => e.eventName == EventName.elevator_load).ToList();
         sizeFloor = 2 * yLimit / numFloors;
-        eleQueueUp = initQueue(-Vector3.right * xSpace);
-        eleQueueDown = initQueue(-Vector3.right * xSpace*4);
-        doctorQueue = initQueue(Vector3.right * xSpace*4);
+        eleQueueUp = initQueue(-2f*Vector3.right * xSpace + xSpace*Vector3.up);
+        eleQueueDown = initQueue(-2f*Vector3.right * xSpace);
+        doctorQueue = initQueue(Vector3.right * xSpace*15);
     }
     // Start is called before the first frame update
     void Start()
