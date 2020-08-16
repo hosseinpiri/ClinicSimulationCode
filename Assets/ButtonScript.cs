@@ -7,7 +7,6 @@ public class ButtonScript : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        cameraScript = gameObject.GetComponentInParent<CameraScript>();
     }
 
     // Update is called once per frame
