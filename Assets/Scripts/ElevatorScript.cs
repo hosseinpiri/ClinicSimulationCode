@@ -27,6 +27,8 @@ public class ElevatorScript : MonoBehaviour
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
+    private int numPeopleX = 3;
+    private float paddingFactor = 0.1f;
 
     // Start is called before the first frame update
 
@@ -51,11 +53,7 @@ public class ElevatorScript : MonoBehaviour
     {
         updateFloorNum();
 
-        //if (isMoving)
-        //{
-        //    eleTrans.dest = new Vector3(transform.position.x, -yLimit + sizeFloor * destFloor, transform.position.z);
-        //    if (!eleTrans.transitionY()) isMoving = false;
-        //}
+        if (Input.GetKeyDown(KeyCode.R)) renderPeopleInElevator(3);
     }
         
     void updateFloorNum()
@@ -75,6 +73,41 @@ public class ElevatorScript : MonoBehaviour
         if (currFloor > floorNum) {
             isMoving = true;
             isMovingUp = false;
+        }
+    }
+
+    public void renderPeopleInElevator(int numPeople)
+    {
+        RectTransform rtEle = gameObject.GetComponent<RectTransform>();
+        Vector3[] vEle = new Vector3[4];
+        rtEle.GetWorldCorners(vEle);
+        float eleWidth = vEle[2].x - vEle[1].x;
+
+        GameObject person = cameraScript.person;
+
+        RectTransform rtPerson = person.GetComponent<RectTransform>();
+        Vector3[] vPerson = new Vector3[4];
+        rtPerson.GetWorldCorners(vPerson);
+        float personWidth = vPerson[2].x - vPerson[1].x;
+
+        float spaceForEach = eleWidth / numPeopleX;
+        float margin = paddingFactor* spaceForEach;
+        float scale = (spaceForEach - margin) / personWidth;
+        float scaledPersonWidth = personWidth * scale;
+
+        float left = vEle[0].x + margin / 2;
+        float currLeft = left;
+        
+        for (int i = 0; i < numPeople; i++)
+        {
+            if (i % numPeopleX == 0) currLeft = left;
+            Vector3 newPos = new Vector3(currLeft + scaledPersonWidth / 2, transform.position.y, 0);
+            GameObject currCircle = Instantiate(person);
+            currCircle.transform.localScale = currCircle.transform.lossyScale * scale;
+            currCircle.transform.position = newPos;
+            currCircle.transform.SetParent(gameObject.transform);
+            currCircle.SetActive(true);
+            currLeft += margin + scaledPersonWidth;
         }
     }
 }

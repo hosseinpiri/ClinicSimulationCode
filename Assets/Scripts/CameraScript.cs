@@ -109,6 +109,7 @@ public class CameraScript : MonoBehaviour
             for (int i = 0; i < sizeDiff; i++)
             {
                 GameObject currCicle = Instantiate(person);
+                currCicle.transform.SetParent(this.transform);
                 currCicle.SetActive(true);
                 currCicle.transform.position = queueObj.offset - Vector3.right * xSpace * queueObj.q.Count;
                 PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
