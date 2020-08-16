@@ -29,6 +29,7 @@ public class CameraScript : MonoBehaviour
     public float yLimit = 3f;
     public int numFloors = 9;
     public float sizeFloor;
+    public float animationSpeed = 5f;
 
 
     private void Awake()
@@ -59,7 +60,7 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        elapsedTime += Time.deltaTime;
+        elapsedTime += animationSpeed*Time.deltaTime;
         transitionHelper();
         // Testing only
         //if (Input.GetKeyUp(KeyCode.U)) updateQueue(doctorQueue[0], doctorQueue[0].q.Count + 1);
