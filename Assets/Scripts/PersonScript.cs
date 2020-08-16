@@ -49,9 +49,10 @@ public class PersonScript : MonoBehaviour
         }
     }
 
-    public void animateDestroy()
+    public bool animateDestroy()
     {
         fadeOut = true;
         currAlpha = 0;
+        return true;
     }
 }

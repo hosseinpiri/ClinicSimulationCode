@@ -82,7 +82,7 @@ public class CameraScript : MonoBehaviour
                     sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
                 eleTransition.transitionTime = curEvent.time - prevEvent.time;
                 eleTransition.transitionSpeed = Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / eleTransition.transitionTime;
-                elevatorScript.loadText.text = prevEvent.newVal.ToString();
+                elevatorScript.renderPeopleInElevator(prevEvent.newVal);
                 if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
                     eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
                 if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
@@ -90,7 +90,8 @@ public class CameraScript : MonoBehaviour
                 eleEventList.RemoveAt(0);
             }
         }
-        if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) elevatorScript.loadText.text = eleEventList[0].newVal.ToString();
+        if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) 
+            elevatorScript.renderPeopleInElevator(eleEventList[0].newVal);
     }
     private QueueObj[] initQueue(Vector3 xoffSet)
     {

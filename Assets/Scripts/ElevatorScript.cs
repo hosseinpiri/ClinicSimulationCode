@@ -23,12 +23,12 @@ public class ElevatorScript : MonoBehaviour
     public int numFloors = 9;
     public int currFloor = 0;
     private TextMeshProUGUI floorNumText;
-    public TextMeshProUGUI loadText;
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
     private int numPeopleX = 3;
     private float paddingFactor = 0.1f;
+    private List<GameObject> currLoad;
 
     // Start is called before the first frame update
 
@@ -38,10 +38,10 @@ public class ElevatorScript : MonoBehaviour
         isMovingUp = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
         floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
-        loadText = gameObject.GetComponentInChildren<Canvas>().GetComponentsInChildren<TextMeshProUGUI>()[1];
         floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
         eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
+        currLoad = new List<GameObject>();
     }
     void Start()
     {
@@ -53,7 +53,7 @@ public class ElevatorScript : MonoBehaviour
     {
         updateFloorNum();
 
-        if (Input.GetKeyDown(KeyCode.R)) renderPeopleInElevator(3);
+        if (Input.GetKeyDown(KeyCode.R)) renderPeopleInElevator(10);
     }
         
     void updateFloorNum()
@@ -78,6 +78,8 @@ public class ElevatorScript : MonoBehaviour
 
     public void renderPeopleInElevator(int numPeople)
     {
+        currLoad.RemoveAll(p => p.GetComponent<PersonScript>().animateDestroy());
+
         RectTransform rtEle = gameObject.GetComponent<RectTransform>();
         Vector3[] vEle = new Vector3[4];
         rtEle.GetWorldCorners(vEle);
@@ -97,17 +99,24 @@ public class ElevatorScript : MonoBehaviour
 
         float left = vEle[0].x + margin / 2;
         float currLeft = left;
-        
+
+        float bottom = vEle[0].y + margin / 2 + scaledPersonWidth/ 2;
+
+
         for (int i = 0; i < numPeople; i++)
         {
-            if (i % numPeopleX == 0) currLeft = left;
-            Vector3 newPos = new Vector3(currLeft + scaledPersonWidth / 2, transform.position.y, 0);
+            if (i % numPeopleX == 0) {
+                currLeft = left;
+                if (i > 0) bottom += scaledPersonWidth + margin;
+            }
+            Vector3 newPos = new Vector3(currLeft + scaledPersonWidth / 2, bottom, 0);
             GameObject currCircle = Instantiate(person);
             currCircle.transform.localScale = currCircle.transform.lossyScale * scale;
             currCircle.transform.position = newPos;
             currCircle.transform.SetParent(gameObject.transform);
             currCircle.SetActive(true);
             currLeft += margin + scaledPersonWidth;
+            currLoad.Add(currCircle);
         }
     }
 }
