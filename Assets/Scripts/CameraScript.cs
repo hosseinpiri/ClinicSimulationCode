@@ -24,7 +24,6 @@ public class CameraScript : MonoBehaviour
     private QueueObj[] eleQueueUp;
     private QueueObj[] eleQueueDown;
     private QueueObj[] doctorQueue;
-    private QueueObj[] doctorVisited;
     private float elapsedTime = 0;
     public float yLimit = 3f;
     public int numFloors = 9;
@@ -49,7 +48,6 @@ public class CameraScript : MonoBehaviour
         eleQueueUp = initQueue(-Vector3.right * xSpace);
         eleQueueDown = initQueue(-Vector3.right * xSpace*4);
         doctorQueue = initQueue(Vector3.right * xSpace*4);
-        doctorVisited = initQueue(Vector3.right * xSpace * 8);
     }
     // Start is called before the first frame update
     void Start()
@@ -62,12 +60,6 @@ public class CameraScript : MonoBehaviour
     {
         elapsedTime += animationSpeed*Time.deltaTime;
         transitionHelper();
-        // Testing only
-        //if (Input.GetKeyUp(KeyCode.U)) updateQueue(doctorQueue[0], doctorQueue[0].q.Count + 1);
-        //if (Input.GetKeyUp(KeyCode.L)) updateQueue(doctorQueue[0], 2);
-        //if (Input.GetKeyUp(KeyCode.R)) {
-        //    updateQueue(doctorQueue[6], doctorQueue[6].q.Count + 4);
-        //}
 
     }
     private void transitionHelper()
@@ -170,7 +162,6 @@ public class CameraScript : MonoBehaviour
                         updateQueue(doctorQueue[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         break;
                     case EventName.doctor_visited:
-                        updateQueue(doctorVisited[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         break;
                 }
                 eventList.RemoveAt(0);
