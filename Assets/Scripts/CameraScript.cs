@@ -62,11 +62,11 @@ public class CameraScript : MonoBehaviour
         elapsedTime += Time.deltaTime;
         transitionHelper();
         // Testing only
-        if (Input.GetKeyUp(KeyCode.U)) updateQueue(doctorQueue[0], doctorQueue[0].q.Count + 1);
-        if (Input.GetKeyUp(KeyCode.L)) updateQueue(doctorQueue[0], 2);
-        if (Input.GetKeyUp(KeyCode.R)) {
-            updateQueue(doctorQueue[6], doctorQueue[6].q.Count + 4);
-        }
+        //if (Input.GetKeyUp(KeyCode.U)) updateQueue(doctorQueue[0], doctorQueue[0].q.Count + 1);
+        //if (Input.GetKeyUp(KeyCode.L)) updateQueue(doctorQueue[0], 2);
+        //if (Input.GetKeyUp(KeyCode.R)) {
+        //    updateQueue(doctorQueue[6], doctorQueue[6].q.Count + 4);
+        //}
 
     }
     private void transitionHelper()
@@ -91,9 +91,9 @@ public class CameraScript : MonoBehaviour
                 eleTransition.transitionSpeed = Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / eleTransition.transitionTime;
                 elevatorScript.loadText.text = prevEvent.newVal.ToString();
                 if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
-                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal);
+                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
                 if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
-                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal);
+                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
                 eleEventList.RemoveAt(0);
             }
         }
@@ -108,7 +108,7 @@ public class CameraScript : MonoBehaviour
         }
         return q;
     }
-    private void updateQueue(QueueObj queueObj, int newSize)
+    private void updateQueue(QueueObj queueObj, int newSize, EleDirection? dir)
     {
         int sizeDiff = Mathf.Abs(newSize - queueObj.q.Count);
         if (newSize > queueObj.q.Count)
@@ -119,6 +119,17 @@ public class CameraScript : MonoBehaviour
                 currCicle.SetActive(true);
                 currCicle.transform.position = queueObj.offset - Vector3.right * xSpace * queueObj.q.Count;
                 PersonScript currCircleScript = currCicle.GetComponent<PersonScript>();
+                if (dir == EleDirection.UP)
+                {
+                    Transform arrowTransform = currCicle.transform.GetChild(0);
+                    arrowTransform.gameObject.SetActive(true);
+                }
+                if (dir == EleDirection.DOWN)
+                {
+                    Transform arrowTransform = currCicle.transform.GetChild(0);
+                    arrowTransform.Rotate(0, 0, 180, Space.Self);
+                    arrowTransform.gameObject.SetActive(true);
+                }
                 queueObj.q.Enqueue(currCicle);
             }
         }
@@ -151,14 +162,14 @@ public class CameraScript : MonoBehaviour
                 switch (curEvent.eventName)
                 {
                     case EventName.hall_queue:
-                        if (curEvent.eleDir == EleDirection.UP) updateQueue(eleQueueUp[curEvent.floorNum], curEvent.newVal);
-                        else if (curEvent.eleDir == EleDirection.DOWN) updateQueue(eleQueueDown[curEvent.floorNum], curEvent.newVal);
+                        if (curEvent.eleDir == EleDirection.UP) updateQueue(eleQueueUp[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
+                        else if (curEvent.eleDir == EleDirection.DOWN) updateQueue(eleQueueDown[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         break;
                     case EventName.doctor_queue:
-                        updateQueue(doctorQueue[curEvent.floorNum], curEvent.newVal);
+                        updateQueue(doctorQueue[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         break;
                     case EventName.doctor_visited:
-                        updateQueue(doctorVisited[curEvent.floorNum], curEvent.newVal);
+                        updateQueue(doctorVisited[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         break;
                 }
                 eventList.RemoveAt(0);
