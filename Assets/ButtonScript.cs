@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ButtonScript : MonoBehaviour
 {
-    private CameraScript cameraScript;
     // Start is called before the first frame update
     void Awake()
     {
@@ -19,11 +18,11 @@ public class ButtonScript : MonoBehaviour
     
     public void onFastForward()
     {
-        cameraScript.animationSpeed += 0.25f;
+        Time.timeScale += 0.5f;
     }
 
     public void onSlowMo()
     {
-        cameraScript.animationSpeed = Mathf.Max(0.1f, cameraScript.animationSpeed - 0.25f);
+        Time.timeScale = Mathf.Max(0.1f, Time.timeScale - 0.5f);
     }
 }

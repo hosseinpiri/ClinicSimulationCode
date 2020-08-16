@@ -21,7 +21,7 @@ public class SimulationClockScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        elapsedTime = elapsedTime.AddSeconds(Time.deltaTime* cameraScript.animationSpeed);
+        elapsedTime = elapsedTime.AddSeconds(Time.deltaTime);
         simulationClock.text = elapsedTime.ToString("HH:mm:ss");
     }
 }
