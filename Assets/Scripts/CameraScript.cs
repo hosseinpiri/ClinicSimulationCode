@@ -29,7 +29,7 @@ public class CameraScript : MonoBehaviour
     public float yLimit = 3f;
     public int numFloors = 9;
     public float sizeFloor;
-    public float animationSpeed = 5f;
+    public float animationSpeed = 1f;
 
 
     private void Awake()
