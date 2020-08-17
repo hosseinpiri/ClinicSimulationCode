@@ -10,6 +10,7 @@ using UnityEditor;
 using TMPro;
 using UnityEngine.AI;
 using System.Security.Cryptography;
+using System.Drawing;
 
 public class ElevatorScript : MonoBehaviour
 {
@@ -22,13 +23,14 @@ public class ElevatorScript : MonoBehaviour
     public float yLimit = 3f;
     public int numFloors = 9;
     public int currFloor = 0;
-    private TextMeshProUGUI floorNumText;
     public float sizeFloor;
     private int destFloor = 0;
     private GameObjectTransition eleTrans;
     private int numPeopleX = 3;
     private float paddingFactor = 0.1f;
     private List<GameObject> currLoad;
+    public GameObject grid;
+    public GameObject floorPf;
 
     // Start is called before the first frame update
 
@@ -37,15 +39,19 @@ public class ElevatorScript : MonoBehaviour
         isMoving = false;
         isMovingUp = false;
         cameraScript = cameraObj.GetComponent<CameraScript>();
-        floorNumText = gameObject.GetComponentInChildren<Canvas>().GetComponentInChildren<TextMeshProUGUI>();
-        floorNumText.text = "0";
         sizeFloor = 2 * yLimit / numFloors;
         eleTrans = new GameObjectTransition(gameObject, transform.position, eleSpeed);
         currLoad = new List<GameObject>();
+
+        RectTransform rtEle = gameObject.GetComponent<RectTransform>();
+        Vector3[] vEle = new Vector3[4];
+        rtEle.GetWorldCorners(vEle);
+        float eleHeight = vEle[1].y - vEle[0].y;
+        rtEle.localScale = new Vector3(rtEle.lossyScale.x, sizeFloor / eleHeight, rtEle.lossyScale.z);
     }
     void Start()
     {
-        //personQueue = cameraScript.personQueue;
+        renderFloors();
     }
 
     // Update is called once per frame
@@ -59,7 +65,6 @@ public class ElevatorScript : MonoBehaviour
     void updateFloorNum()
     {
         currFloor = Convert.ToInt32((yLimit + transform.position.y) / sizeFloor);
-        floorNumText.text = currFloor.ToString();
     }
 
     public void deliverToFloor(int floorNum)
@@ -117,6 +122,22 @@ public class ElevatorScript : MonoBehaviour
             currCircle.SetActive(true);
             currLeft += margin + scaledPersonWidth;
             currLoad.Add(currCircle);
+        }
+    }
+    private void renderFloors()
+    {
+        RectTransform rtEle = gameObject.GetComponent<RectTransform>();
+        Vector3[] vEle = new Vector3[4];
+        rtEle.GetWorldCorners(vEle);
+        float eleHeight = vEle[1].y - vEle[0].y;
+
+        for (int i = 0; i < numFloors; i++)
+        {
+            GameObject currFloor = Instantiate(floorPf);
+            currFloor.SetActive(true);
+            currFloor.transform.position = new Vector3(0, vEle[0].y + i * eleHeight, transform.position.z);
+            TextMeshProUGUI floorText = currFloor.GetComponentInChildren<TextMeshProUGUI>();
+            floorText.text = i.ToString();
         }
     }
 }

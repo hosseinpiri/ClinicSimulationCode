@@ -11,7 +11,7 @@ public class CameraScript : MonoBehaviour
     public Transform personPos;
     public GameObject person;
     public Queue<GameObject> personQueue;
-    private float xSpace = 0.5f;
+    private float xSpace = 0.3f;
     public GameObject elevatorObj;
     public GameObjectTransition eleTransition;
     private ElevatorScript elevatorScript;
@@ -44,14 +44,13 @@ public class CameraScript : MonoBehaviour
         eventList = CSVReader.Read("DataCSVModified");
         eleEventList = eventList.Where(e => e.eventName == EventName.elevator_load).ToList();
         sizeFloor = 2 * yLimit / numFloors;
-        eleQueueUp = initQueue(-2f*Vector3.right * xSpace + xSpace*Vector3.up);
-        eleQueueDown = initQueue(-2f*Vector3.right * xSpace);
-        doctorQueue = initQueue(Vector3.right * xSpace*15);
     }
     // Start is called before the first frame update
     void Start()
     {
-        
+        eleQueueUp = initQueue(-2f * Vector3.right * xSpace + xSpace * Vector3.up);
+        eleQueueDown = initQueue(-2f * Vector3.right * xSpace);
+        doctorQueue = initQueue(Vector3.right * xSpace * 15);
     }
 
     // Update is called once per frame
@@ -94,10 +93,21 @@ public class CameraScript : MonoBehaviour
     }
     private QueueObj[] initQueue(Vector3 xoffSet)
     {
+        RectTransform rtEle = elevatorObj.GetComponent<RectTransform>();
         QueueObj[] q = new QueueObj[elevatorScript.numFloors];
+        Vector3[] vEle = new Vector3[4];
+        rtEle.GetWorldCorners(vEle);
+
+        RectTransform rtPerson = person.GetComponent<RectTransform>();
+        Vector3[] vPerson = new Vector3[4];
+        rtPerson.GetWorldCorners(vPerson);
+        float personWidth = vPerson[2].x - vPerson[1].x;
+
+        float marginBot = 0.03f;
+
         for (int i = 0; i < elevatorScript.numFloors; i++)
         {
-            q[i] = new QueueObj(personPos.position + Vector3.up*(i*sizeFloor)+ xoffSet);
+            q[i] = new QueueObj(new Vector3(vEle[0].x, vEle[0].y + personWidth/2 + marginBot, 0) + Vector3.up*(i*sizeFloor)+ xoffSet);
         }
         return q;
     }
