@@ -54,5 +54,7 @@ public class ButtonScript : MonoBehaviour
     public void onRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1;
+        playPauseButton.image.sprite = pauseImage;
     }
 }
