@@ -20,7 +20,7 @@ public class CameraScript : MonoBehaviour
     private Queue<GameObject>[] travelledUp;
     private List<GameObjectTransition> personTransitionList;
     private List<Event> eventList;
-    private List<Event> eleEventList;
+    //private List<Event> eleEventList;
     private QueueObj[] eleQueueUp;
     private QueueObj[] eleQueueDown;
     private QueueObj[] doctorQueue;
@@ -42,7 +42,6 @@ public class CameraScript : MonoBehaviour
         }
         personTransitionList = new List<GameObjectTransition>();
         eventList = CSVReader.Read("DataCSVModified");
-        eleEventList = eventList.Where(e => e.eventName == EventName.elevator_load).ToList();
         sizeFloor = 2 * yLimit / numFloors;
     }
     // Start is called before the first frame update
@@ -63,32 +62,11 @@ public class CameraScript : MonoBehaviour
     private void transitionHelper()
     {
         personTransitionList.RemoveAll(got => !got.transitionX());
-        //pushEleTransition();
+        //TODO: Sync elevator doors here
         eleTransition.transitionY();
-        pushPersonTransition();
+        pushEventTransition();
     }
 
-    //private void pushEleTransition()
-    //{
-    //    if (eleEventList.Count > 1)
-    //    {
-    //        Event prevEvent = eleEventList[0];
-    //        Event curEvent = eleEventList[1];
-    //        if (elapsedTime > prevEvent.time)
-    //        {
-    //            eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
-    //                sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
-    //            elevatorScript.renderPeopleInElevator(prevEvent.newVal);
-    //            if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
-    //                eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
-    //            if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
-    //                eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
-    //            eleEventList.RemoveAt(0);
-    //        }
-    //    }
-    //    if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) 
-    //        elevatorScript.renderPeopleInElevator(eleEventList[0].newVal);
-    //}
     private QueueObj[] initQueue(Vector3 xoffSet)
     {
         RectTransform rtEle = elevatorObj.GetComponent<RectTransform>();
@@ -154,7 +132,7 @@ public class CameraScript : MonoBehaviour
         }
         else return;
     }
-    private void pushPersonTransition()
+    private void pushEventTransition()
     {
         if (eventList.Count > 0)
         {

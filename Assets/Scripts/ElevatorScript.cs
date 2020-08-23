@@ -11,6 +11,7 @@ using TMPro;
 using UnityEngine.AI;
 using System.Security.Cryptography;
 using System.Drawing;
+using System.Dynamic;
 
 public class ElevatorScript : MonoBehaviour
 {
@@ -31,6 +32,12 @@ public class ElevatorScript : MonoBehaviour
     private List<GameObject> currLoad;
     public GameObject grid;
     public GameObject floorPf;
+    public Transform leftDoor;
+    public Transform rightDoor;
+    public bool isDoorOpening { get; set; } = false;
+    public bool isDoorClosing { get; set; } = false;
+    private float doorSpeed = 1F;
+    private float doorScale;
 
     // Start is called before the first frame update
 
@@ -52,14 +59,17 @@ public class ElevatorScript : MonoBehaviour
     void Start()
     {
         renderFloors();
+        doorScale = leftDoor.localScale.x;
     }
 
     // Update is called once per frame
     void Update()
     {
         updateFloorNum();
-
+        doorTransition();
         if (Input.GetKeyDown(KeyCode.R)) renderPeopleInElevator(10);
+        if (Input.GetKeyDown(KeyCode.O)) isDoorOpening = true;
+        if (Input.GetKeyDown(KeyCode.C)) isDoorClosing = true;
     }
         
     void updateFloorNum()
@@ -144,5 +154,29 @@ public class ElevatorScript : MonoBehaviour
 
             }
         }
+    }
+    private void doorTransition()
+    {
+        if (isDoorOpening)
+        {
+            if (Mathf.Approximately(leftDoor.localScale.x, 0)) isDoorOpening = false;
+            else
+            {
+                float newScale = leftDoor.localScale.x - doorSpeed * Time.deltaTime;
+                leftDoor.localScale = new Vector3(Mathf.Max(0, newScale), leftDoor.localScale.y, leftDoor.localScale.z);
+                rightDoor.localScale = new Vector3(Mathf.Max(0, newScale), leftDoor.localScale.y, leftDoor.localScale.z);
+            }
+        }
+        if (isDoorClosing)
+        {
+            if (Mathf.Approximately(leftDoor.localScale.x, doorScale)) isDoorClosing = false;
+            else
+            {
+                float newScale = leftDoor.localScale.x + doorSpeed * Time.deltaTime;
+                leftDoor.localScale = new Vector3(Mathf.Min(doorScale, newScale), leftDoor.localScale.y, leftDoor.localScale.z);
+                rightDoor.localScale = new Vector3(Mathf.Min(doorScale, newScale), leftDoor.localScale.y, leftDoor.localScale.z);
+            }
+        }
+
     }
 }
