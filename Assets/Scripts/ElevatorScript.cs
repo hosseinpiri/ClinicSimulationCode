@@ -131,13 +131,18 @@ public class ElevatorScript : MonoBehaviour
         rtEle.GetWorldCorners(vEle);
         float eleHeight = vEle[1].y - vEle[0].y;
 
-        for (int i = 0; i < numFloors; i++)
+        for (int i = 0; i < numFloors + 1; i++)
         {
             GameObject currFloor = Instantiate(floorPf);
             currFloor.SetActive(true);
             currFloor.transform.position = new Vector3(0, vEle[0].y + i * eleHeight, transform.position.z);
-            TextMeshProUGUI floorText = currFloor.GetComponentInChildren<TextMeshProUGUI>();
-            floorText.text = i.ToString();
+            if (i < numFloors)
+            {
+                TextMeshProUGUI floorText = currFloor.GetComponentInChildren<TextMeshProUGUI>();
+                if (i == 0) floorText.text = "G";
+                else floorText.text = i.ToString();
+
+            }
         }
     }
 }
