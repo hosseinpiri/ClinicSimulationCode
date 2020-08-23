@@ -34,7 +34,7 @@ public class CameraScript : MonoBehaviour
     {
         personQueue = new Queue<GameObject>();
         elevatorScript = elevatorObj.GetComponent<ElevatorScript>();
-        eleTransition = new GameObjectTransition(elevatorObj, elevatorObj.transform.position);
+        eleTransition = new GameObjectTransition(elevatorObj, elevatorObj.transform.position, elevatorScript.eleSpeed);
         travelledUp = new Queue<GameObject>[elevatorScript.numFloors];
         for (int i = 0; i < elevatorScript.numFloors; i++)
         {
@@ -63,34 +63,32 @@ public class CameraScript : MonoBehaviour
     private void transitionHelper()
     {
         personTransitionList.RemoveAll(got => !got.transitionX());
-        pushEleTransition();
+        //pushEleTransition();
         eleTransition.transitionY();
         pushPersonTransition();
     }
 
-    private void pushEleTransition()
-    {
-        if (eleEventList.Count > 1)
-        {
-            Event prevEvent = eleEventList[0];
-            Event curEvent = eleEventList[1];
-            if (elapsedTime > prevEvent.time)
-            {
-                eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
-                    sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
-                eleTransition.transitionTime = curEvent.time - prevEvent.time;
-                eleTransition.transitionSpeed = Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / eleTransition.transitionTime;
-                elevatorScript.renderPeopleInElevator(prevEvent.newVal);
-                if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
-                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
-                if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
-                    eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
-                eleEventList.RemoveAt(0);
-            }
-        }
-        if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) 
-            elevatorScript.renderPeopleInElevator(eleEventList[0].newVal);
-    }
+    //private void pushEleTransition()
+    //{
+    //    if (eleEventList.Count > 1)
+    //    {
+    //        Event prevEvent = eleEventList[0];
+    //        Event curEvent = eleEventList[1];
+    //        if (elapsedTime > prevEvent.time)
+    //        {
+    //            eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
+    //                sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
+    //            elevatorScript.renderPeopleInElevator(prevEvent.newVal);
+    //            if (curEvent.floorNum > prevEvent.floorNum) updateQueue(eleQueueUp[prevEvent.floorNum], 
+    //                eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
+    //            if (curEvent.floorNum < prevEvent.floorNum) updateQueue(eleQueueDown[prevEvent.floorNum],
+    //                eleQueueUp[prevEvent.floorNum].q.Count - prevEvent.newVal, null);
+    //            eleEventList.RemoveAt(0);
+    //        }
+    //    }
+    //    if (eleEventList.Count == 1 && elapsedTime > eleEventList[0].time) 
+    //        elevatorScript.renderPeopleInElevator(eleEventList[0].newVal);
+    //}
     private QueueObj[] initQueue(Vector3 xoffSet)
     {
         RectTransform rtEle = elevatorObj.GetComponent<RectTransform>();
@@ -174,9 +172,23 @@ public class CameraScript : MonoBehaviour
                         break;
                     case EventName.doctor_visited:
                         break;
+                    case EventName.elevator_load:
+                        eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
+                    sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
+                        elevatorScript.renderPeopleInElevator(curEvent.newVal);
+                        if (curEvent.floorNum > elevatorScript.currFloor) updateQueue(eleQueueUp[elevatorScript.currFloor],
+                            eleQueueUp[elevatorScript.currFloor].q.Count - curEvent.newVal, null);
+                        if (curEvent.floorNum < elevatorScript.currFloor) updateQueue(eleQueueDown[elevatorScript.currFloor],
+                            eleQueueUp[elevatorScript.currFloor].q.Count - curEvent.newVal, null);
+                        Invoke("emptyElevator", Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / elevatorScript.eleSpeed);
+                        break;
                 }
                 eventList.RemoveAt(0);
             }
         }
+    }
+    private void emptyElevator()
+    {
+        elevatorScript.renderPeopleInElevator(0);
     }
 }

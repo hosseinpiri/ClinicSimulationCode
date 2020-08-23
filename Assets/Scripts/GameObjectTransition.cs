@@ -8,8 +8,6 @@ public class GameObjectTransition
     public GameObject gameObj;
     public Vector3 dest;
     public float transitionSpeed = 10F;
-    private float elapsedTime = 0;
-    public float transitionTime { get; set; } = 0;
 
     public GameObjectTransition(GameObject gameObj, Vector3 dest)
     {
@@ -38,8 +36,6 @@ public class GameObjectTransition
     {
         if (Mathf.Approximately(dest[i], gameObj.transform.position[i]))
         {
-            elapsedTime = 0;
-            transitionTime = 0;
             return false;
         }
         if (dest[i] > gameObj.transform.position[i])
