@@ -2386,7 +2386,6 @@ MonoBehaviour:
   parent: {fileID: 519420028}
   destFloor: 0
   srcFloor: 0
-  currAlpha: 0
 --- !u!224 &2927775420145536018 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3252437712124061663, guid: 87626ddc85147744f90019202dfaae13,
@@ -2478,7 +2477,7 @@ PrefabInstance:
     - target: {fileID: 6126521679889667245, guid: 1e14537f3d81b4b408745933c12a99fe,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6126521681043217328, guid: 1e14537f3d81b4b408745933c12a99fe,
         type: 3}

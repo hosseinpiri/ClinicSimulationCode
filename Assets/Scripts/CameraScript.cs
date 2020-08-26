@@ -28,6 +28,7 @@ public class CameraScript : MonoBehaviour
     public float yLimit = 3f;
     public int numFloors = 9;
     public float sizeFloor;
+    private float elePeopleTransitionDelay = 1f;
 
 
     private void Awake()
@@ -64,7 +65,7 @@ public class CameraScript : MonoBehaviour
         personTransitionList.RemoveAll(got => !got.transitionX());
         //TODO: Sync elevator doors here
         eleTransition.transitionY();
-        pushEventTransition();
+        StartCoroutine("pushEventTransition");
     }
 
     private QueueObj[] initQueue(Vector3 xoffSet)
@@ -132,7 +133,7 @@ public class CameraScript : MonoBehaviour
         }
         else return;
     }
-    private void pushEventTransition()
+    private IEnumerator pushEventTransition()
     {
         if (eventList.Count > 0)
         {
@@ -144,29 +145,37 @@ public class CameraScript : MonoBehaviour
                     case EventName.hall_queue:
                         if (curEvent.eleDir == EleDirection.UP) updateQueue(eleQueueUp[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
                         else if (curEvent.eleDir == EleDirection.DOWN) updateQueue(eleQueueDown[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
+                        eventList.RemoveAt(0);
                         break;
                     case EventName.doctor_queue:
                         updateQueue(doctorQueue[curEvent.floorNum], curEvent.newVal, curEvent.eleDir);
+                        eventList.RemoveAt(0);
                         break;
                     case EventName.doctor_visited:
+                        eventList.RemoveAt(0);
                         break;
                     case EventName.elevator_load:
-                        eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
-                    sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
+                        eventList.RemoveAt(0);
+                        elevatorScript.isDoorOpening = true;
+                        yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
                         elevatorScript.renderPeopleInElevator(curEvent.newVal);
-                        if (curEvent.floorNum > elevatorScript.currFloor) updateQueue(eleQueueUp[elevatorScript.currFloor],
-                            eleQueueUp[elevatorScript.currFloor].q.Count - curEvent.newVal, null);
-                        if (curEvent.floorNum < elevatorScript.currFloor) updateQueue(eleQueueDown[elevatorScript.currFloor],
-                            eleQueueUp[elevatorScript.currFloor].q.Count - curEvent.newVal, null);
-                        Invoke("emptyElevator", Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / elevatorScript.eleSpeed);
+                        yield return new WaitForSeconds(elePeopleTransitionDelay);
+                        elevatorScript.isDoorClosing = true;
+                        yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
+
+                        eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
+                            sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
+
+                        yield return new WaitForSeconds(Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / elevatorScript.eleSpeed);
+                        elevatorScript.isDoorOpening = true;
+                        yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
+                        elevatorScript.renderPeopleInElevator(0);
+                        yield return new WaitForSeconds(elePeopleTransitionDelay);
+                        elevatorScript.isDoorClosing = true;
+                        yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
                         break;
                 }
-                eventList.RemoveAt(0);
             }
         }
-    }
-    private void emptyElevator()
-    {
-        elevatorScript.renderPeopleInElevator(0);
     }
 }

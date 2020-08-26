@@ -155,6 +155,7 @@ public class ElevatorScript : MonoBehaviour
             }
         }
     }
+
     private void doorTransition()
     {
         if (isDoorOpening)
@@ -167,7 +168,7 @@ public class ElevatorScript : MonoBehaviour
                 rightDoor.localScale = new Vector3(Mathf.Max(0, newScale), leftDoor.localScale.y, leftDoor.localScale.z);
             }
         }
-        if (isDoorClosing)
+        else if (isDoorClosing)
         {
             if (Mathf.Approximately(leftDoor.localScale.x, doorScale)) isDoorClosing = false;
             else
