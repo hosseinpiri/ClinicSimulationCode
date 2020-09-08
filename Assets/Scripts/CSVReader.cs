@@ -82,6 +82,11 @@ public class CSVReader
 						int.TryParse(value, out newVal);
 						propInfo.SetValue(entry, newVal);
 						break;
+					case "toDrop":
+						int toDrop;
+						if (int.TryParse(value, out toDrop)) propInfo.SetValue(entry, toDrop);
+						else propInfo.SetValue(entry, null);
+						break;
 					default:
 						Debug.Log("Invalid CSV Entry: " + header[j] + ":" + finalvalue);
 							break;

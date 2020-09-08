@@ -156,23 +156,29 @@ public class CameraScript : MonoBehaviour
                         break;
                     case EventName.elevator_load:
                         eventList.RemoveAt(0);
-                        elevatorScript.isDoorOpening = true;
-                        yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
-                        elevatorScript.renderPeopleInElevator(curEvent.newVal);
-                        yield return new WaitForSeconds(elePeopleTransitionDelay);
-                        elevatorScript.isDoorClosing = true;
-                        yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
-
+                        if (curEvent.newVal > 0)
+                        {
+                            elevatorScript.isDoorOpening = true;
+                            yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
+                            elevatorScript.renderPeopleInElevator(curEvent.newVal);
+                            yield return new WaitForSeconds(elePeopleTransitionDelay);
+                            elevatorScript.isDoorClosing = true;
+                            yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
+                        }
+                        
                         eleTransition.dest = new Vector3(elevatorObj.transform.position.x, -yLimit +
                             sizeFloor * curEvent.floorNum, elevatorObj.transform.position.z);
-
                         yield return new WaitForSeconds(Vector3.Distance(eleTransition.dest, elevatorObj.transform.position) / elevatorScript.eleSpeed);
-                        elevatorScript.isDoorOpening = true;
-                        yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
-                        elevatorScript.renderPeopleInElevator(0);
-                        yield return new WaitForSeconds(elePeopleTransitionDelay);
-                        elevatorScript.isDoorClosing = true;
-                        yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
+
+                        if (curEvent.toDrop > 0)
+                        {
+                            elevatorScript.isDoorOpening = true;
+                            yield return new WaitUntil(() => elevatorScript.isDoorOpening == false);
+                            elevatorScript.renderPeopleInElevator(curEvent.newVal - curEvent.toDrop.GetValueOrDefault());
+                            yield return new WaitForSeconds(elePeopleTransitionDelay);
+                            elevatorScript.isDoorClosing = true;
+                            yield return new WaitUntil(() => elevatorScript.isDoorClosing == false);
+                        }
                         break;
                 }
             }

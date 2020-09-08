@@ -21,5 +21,6 @@ public class Event
     public EleDirection? eleDir { get; set; }
     public int? clinicNum { get; set; }
     public int newVal { get; set; }
+    public int? toDrop { get; set; }
 
 }
